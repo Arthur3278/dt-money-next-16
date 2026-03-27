@@ -20,31 +20,26 @@ export default function Home() {
   const [transactionToEdit, setTransactionToEdit] = useState<ITransaction | null>(null);
   const [transactionToDelete, setTransactionToDelete] = useState<ITransaction | null>(null);
 
-  // Adicionar
   const handleAddTransaction = (transaction: ITransaction) => {
     const newTransaction = { ...transaction, id: crypto.randomUUID() };
     setTransactionData((prev) => [...prev, newTransaction]);
   }
 
-  // Editar
   const handleEditTransaction = (updated: ITransaction) => {
     setTransactionData((prev) =>
       prev.map((t) => (t.id === updated.id ? updated : t))
     );
   }
 
-  // Abrir modal de edição
   const handleOpenEdit = (transaction: ITransaction) => {
     setTransactionToEdit(transaction);
     setIsFormModalOpen(true);
   }
 
-  // Abrir modal de confirmação de exclusão
   const handleOpenDelete = (transaction: ITransaction) => {
     setTransactionToDelete(transaction);
   }
 
-  // Confirmar exclusão
   const handleConfirmDelete = () => {
     if (transactionToDelete) {
       setTransactionData((prev) => prev.filter((t) => t.id !== transactionToDelete.id));
@@ -52,7 +47,6 @@ export default function Home() {
     }
   }
 
-  // Fechar form modal
   const handleCloseFormModal = () => {
     setIsFormModalOpen(false);
     setTransactionToEdit(null);
@@ -83,7 +77,6 @@ export default function Home() {
          />
       </BodyContainer>
 
-      {/* Modal de criar/editar */}
       {isFormModalOpen && (
         <FormModal 
           closeModal={handleCloseFormModal}
@@ -94,15 +87,14 @@ export default function Home() {
         />
       )}
 
-      {/* Modal de confirmação de exclusão */}
       {transactionToDelete && (
         <div className="relative z-10" role="dialog" aria-modal="true">
           <div className="fixed inset-0 bg-gray-700 opacity-75" aria-hidden="true" />
           <div className="fixed inset-0 z-10 flex items-center justify-center p-4">
             <div className="bg-white rounded-lg shadow-xl p-8 max-w-sm w-full text-center">
-              <h2 className="text-xl font-semibold text-gray-800 mb-2">Excluir transação</h2>
+              <h2 className="text-xl font-semibold text-gray-800 mb-2">Excluir esta transação</h2>
               <p className="text-gray-500 mb-6">
-                Tem certeza que deseja excluir <strong>{transactionToDelete.title}</strong>?
+                Realmente tem certeza que deseja excluir <strong>{transactionToDelete.title}</strong>?
               </p>
               <div className="flex gap-4 justify-center">
                 <button

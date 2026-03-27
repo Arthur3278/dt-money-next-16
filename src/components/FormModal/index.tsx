@@ -29,7 +29,6 @@ export const FormModal = ({ title, closeModal, addTransaction, editTransaction, 
     defaultValues
   })  
 
-  // Preenche o formulário quando for edição
   useEffect(() => {
     if (transactionToEdit) {
       setValue("title", transactionToEdit.title);
@@ -127,8 +126,8 @@ export const FormModal = ({ title, closeModal, addTransaction, editTransaction, 
                         <button 
                            type="submit"
                            className="mt-6 mb-16 w-full justify-center rounded-md bg-income text-white px-3 py-5 text-normal font-semibold shadow-sm hover:opacity-80"
-                        >
-                           Confirmar     
+                        >     
+                        Confirmar edição
                         </button> 
                     </form>
 
