@@ -5,34 +5,61 @@ import { TransactionType } from "@/types/transaction";
 import { TransactionFormData, transactionSchema, defaultValues } from "./schema";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useEffect } from "react";
 
 export type FormModalProps = {
    title: string;
    closeModal: () => void;
    addTransaction: (transaction: ITransaction) => void;
+   editTransaction?: (transaction: ITransaction) => void;
+   transactionToEdit?: ITransaction | null;
 }
 
-export const FormModal = ({ title, closeModal, addTransaction }: FormModalProps) => {
+export const FormModal = ({ title, closeModal, addTransaction, editTransaction, transactionToEdit }: FormModalProps) => {
   
   const {
     handleSubmit,
     register,
-    formState: { errors},
+    formState: { errors },
     setValue,
-    watch
+    watch,
+    reset
   } = useForm<TransactionFormData>({
     resolver: yupResolver(transactionSchema),
     defaultValues
   })  
+
+  // Preenche o formulário quando for edição
+  useEffect(() => {
+    if (transactionToEdit) {
+      setValue("title", transactionToEdit.title);
+      setValue("price", transactionToEdit.price);
+      setValue("category", transactionToEdit.category);
+      setValue("type", transactionToEdit.type);
+    } else {
+      reset(defaultValues);
+    }
+  }, [transactionToEdit, setValue, reset]);
+
   const handleTypeChange = (type: TransactionType) => {
     setValue("type", type);
   }
 
   const handleSubmitForm = (data: TransactionFormData) => {
-    addTransaction(data as ITransaction);
+    if (transactionToEdit && editTransaction) {
+      editTransaction({ 
+        id: transactionToEdit.id,
+        data: transactionToEdit.data,
+        title: data.title,
+        price: data.price,
+        category: data.category,
+        type: data.type as TransactionType,
+      });
+    } else {
+      addTransaction(data as ITransaction);
+    }
     closeModal();
   }
-
 
   const type = watch("type");
 
@@ -43,13 +70,13 @@ export const FormModal = ({ title, closeModal, addTransaction }: FormModalProps)
         role="dialog"
         aria-modal="true"
     >
-       <div className="fixed inset-0 bg-gray-700 opacity-75 transition-opacity "
+       <div className="fixed inset-0 bg-gray-700 opacity-75 transition-opacity"
            aria-hidden="true"
         />
 
        <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
            <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                <div className="relative transform overflow-hidden rounder-lg  bg-modal text-left shadow-xl sm:w-full sm:max-w-lg">
+                <div className="relative transform overflow-hidden rounder-lg bg-modal text-left shadow-xl sm:w-full sm:max-w-lg">
                     <button type="button" className="absolute top-0 right-0 mt-4 mr-5 text-gray-400 hover:text-gray-600"
                      onClick={closeModal}
                      aria-label="Fechar"
@@ -94,7 +121,7 @@ export const FormModal = ({ title, closeModal, addTransaction }: FormModalProps)
                            type="text"
                            placeholder="Categoria"  
                            {...register("category")} 
-                            error={errors.category?.message}
+                           error={errors.category?.message}
                         />
                          
                         <button 
@@ -108,7 +135,6 @@ export const FormModal = ({ title, closeModal, addTransaction }: FormModalProps)
                 </div>
            </div>
         </div> 
-         
 
     </div>
   )
